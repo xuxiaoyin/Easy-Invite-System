@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<script type="text/javascript" src="jquery-3.3.1.min.js"></script>
+</head>
+<style>
+.main{ width: 500px; margin: 0 auto; padding: 300px 0;}
+.clear:after{ content: ''; display: block; clear: both;}
+.sel-box{ position: relative; min-height: 30px; margin-bottom: 10px; line-height: 30px;}
+.sel-box .name, .sel-box .write-place, .sel-box input{ float: left; margin: 0 4px;}
+.sel-box .popup{ position: absolute; top: 0; right: -10px; width: 80px; padding: 10px; border: 1px solid #000; background: #fff; cursor: pointer; display: none;}
+.popup span{ display: block; line-height: 30px;}
+.write-place{ width: 290px; min-height: 28px; border: 1px solid #ccc; border-radius: 2px; padding: 0 5px; cursor: not-allowed;}
+.sel-box input{ width: 40px; height: 28px; font-size: 20px; line-height: 30px; padding: 0;}
+.write-place span{ position: relative; padding-right: 20px; float: left;}
+.write-place span em{ position: absolute; width: 13px; height: 13px; background: url(delete.png) no-repeat; top: 2px; right: 10px;}
+</style>
+<body>
+<div class="main">
+	<div class="sel-box clear" id="sel-1000">
+		<span class="name">地点:</span>
+		<div class="write-place" id="main-1000">
+			<span>办公室<em></em></span>
+		</div>
+		<input type="button" value="+"  id="add-1000"/>
+		<input type="button" value="-"  id="remove-1000"/>
+		<div class="popup" id="popup-1000">
+			<span>办公室</span>
+			<span>会议室</span>
+			<span>室外</span>
+			<span>咖啡厅</span>
+		</div>
+	</div>
+	
+	<div class="sel-box clear" id="sel-2000">
+		<span class="name">时间:</span>
+		<div class="write-place" id="main-2000">
+			<span>8:00~10:00<em></em></span>
+		</div>
+		<input type="button" value="+"  id="add-2000"/>
+		<input type="button" value="-"  id="remove-2000"/>
+		<div class="popup" id="popup-2000">
+			<span>8:00~10:00</span>
+			<span>12:00~13:00</span>
+			<span>14:00~16:00</span>
+			<span>18:00~20:00</span>
+		</div>
+	</div>
+	
+	<div class="sel-box clear" id="sel-3000">
+		<span class="name">领导:</span>
+		<div class="write-place" id="main-3000">
+			<span>马云<em></em></span>
+			<span>马化腾<em></em></span>
+			<span>刘强东<em></em></span>
+			<span>李彦宏<em></em></span>
+			<span>雷军<em></em></span>
+			<span>董明珠<em></em></span>
+			<span>马云1<em></em></span>
+			<span>马化腾1<em></em></span>
+			<span>刘强东1<em></em></span>
+			<span>李彦宏1<em></em></span>
+			<span>雷军1<em></em></span>
+			<span>董明珠1<em></em></span>
+		</div>
+		<input type="button" value="+"  id="add-3000"/>
+		<input type="button" value="-"  id="remove-3000"/>
+		<div class="popup" id="popup-3000">
+			<span>马云</span>
+			<span>马化腾</span>
+			<span>刘强东</span>
+			<span>李彦宏</span>
+			<span>雷军</span>
+			<span>董明珠</span>
+			<span>马云1</span>
+			<span>马化腾1</span>
+			<span>刘强东1</span>
+			<span>李彦宏1</span>
+			<span>雷军1</span>
+			<span>董明珠1</span>
+		</div>
+	</div>
+	
+	<div class="sel-box clear" id="sel-4000">
+		<span class="name">部门:</span>
+		<div class="write-place" id="main-4000">
+			<span>总经办<em></em></span>
+			<span>开发部 <em></em></span>
+		</div>
+		<input type="button" value="+"  id="add-4000"/>
+		<input type="button" value="-"  id="remove-4000"/>
+		<div class="popup" id="popup-4000">
+			<span>总经办</span>
+			<span>人事部</span>
+			<span>商务部</span>
+			<span>财务部</span>
+			<span>设计部</span>
+			<span>开发部</span>
+		</div>
+	</div>
+</div>
+</body>
+</html>
