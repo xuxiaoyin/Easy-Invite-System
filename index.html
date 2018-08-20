@@ -10,49 +10,299 @@
 .clear:after{ content: ''; display: block; clear: both;}
 .sel-box{ position: relative; min-height: 30px; margin-bottom: 10px; line-height: 30px;}
 .sel-box .name, .sel-box .write-place, .sel-box input{ float: left; margin: 0 4px;}
-.sel-box .popup{ position: absolute; top: 0; right: -10px; width: 80px; padding: 10px; border: 1px solid #000; background: #fff; cursor: pointer; display: none;}
-.popup span{ display: block; line-height: 30px;}
+.sel-box .popup{ position: absolute; top: 0; right: -20px; width: 120px;  border: 1px solid #000; background: #fff; cursor: pointer; display: none; z-index: 999;}
+.popup span{ display: block; line-height: 30px; padding: 0 10px;}
+.popup .active{ background: #00A2CA; color: #fff;}
 .write-place{ width: 290px; min-height: 28px; border: 1px solid #ccc; border-radius: 2px; padding: 0 5px; cursor: not-allowed;}
 .sel-box input{ width: 40px; height: 28px; font-size: 20px; line-height: 30px; padding: 0;}
-.write-place span{ position: relative; padding-right: 20px; float: left;}
-.write-place span em{ position: absolute; width: 13px; height: 13px; background: url(delete.png) no-repeat; top: 2px; right: 10px;}
+.write-place span{ position: relative; padding-right: 20px; float: left; cursor: default;}
+.write-place span em{ position: absolute; width: 13px; height: 13px; background: url(delete.png) no-repeat; top: 2px; right: 10px; cursor: pointer;}
 </style>
+
+<script>
+$(function(){
+	function popup(id,type,data){
+		bindAddBtn();
+		
+		$(document).off().click(function(){
+			closePopup();
+		});
+		
+		$('#sel-'+id).off().click(function(){
+			return false;
+		});
+		
+		bindRemoveText();
+		bindRemoveAll();
+		
+		if(type==2){
+			testDrag();
+		}
+		
+//		添加按钮点击事件
+		function bindAddBtn(){
+			$('#add-'+id).on('click',function(){
+				closePopup();
+				if(type==1){
+					crateRadio();
+				}else if(type==2){
+					crateMore();
+				}
+				popupShow();
+				moveVisible();
+			});
+		};
+		
+//		添加按钮删除事件		
+		function bindRemoveAll(){
+			$('#remove-'+id).click(function(){
+				$('#main-'+id).find('em').each(function(){
+					$(this).trigger('click');
+				});
+			});
+		};
+		
+//		添加数据
+		function setInitDate(){
+			var $popup=$('#popup-'+id);
+			$.each(data, function() {
+				var $span=$('<span>'+this.name+'</span>')
+				$popup.append($span);
+			});
+		}
+
+//		关闭弹层
+		function closePopup(){
+			$('.popup').hide();
+		};
+		
+//		显示弹层		
+		function popupShow(){
+			$('#popup-'+id).show();
+		};
+
+
+	//输入框内的删除按钮
+	function bindRemoveText(){
+		$('#main-'+id).delegate('em','click',function(){
+			var $parent=$(this).parent();
+			var This=this;
+			$parent.remove();
+			$('#popup-'+id).find('span').each(function(){
+				if($(this).index()==$parent.attr('_index')){
+					$(this).attr('class','');
+				}
+			})
+			
+		});
+	}
+
+	//运动到可视区
+	function moveVisible(){
+		$('#popup-'+id).css('top',0);
+		var $wH=$(window).height()+$(document).scrollTop();
+		var $objH=$('#popup-'+id).offset().top+$('#popup-'+id).outerHeight();
+		if($wH<$objH){
+			$('#popup-'+id).animate({top:-($objH-$wH)});
+		}
+	}
+
+
+//		创建单选	
+		function crateRadio(){
+			if(!$('#popup-'+id).find('span').length ){
+				setInitDate();
+				bindRadio();
+			}
+			
+		};
+
+//		创建多选
+		function crateMore(){
+			if(!$('#popup-'+id).find('span').length ){
+				setInitDate();
+				craetMoreBtn();
+				bindMore();
+			}	
+		};
+
+//		单选事件
+		function bindRadio(){
+			var $span=$('#popup-'+id).find('span')
+			$span.click(function(){
+				if($(this).attr('class')!='active'){
+					$span.attr('class','');
+					$(this).attr('class','active');
+					textRadio.add($(this).html(),$(this).index());
+				}else{
+					$(this).attr('class','');
+					textRadio.remove();
+				}
+				
+			});
+		};
+		
+//		多选事件		
+		function bindMore(){
+			var $span=$('#popup-'+id).find('span')
+			$span.click(function(){
+				if($(this).attr('class')!='active'){
+					$(this).attr('class','active');
+					textMore.add($(this).html(),$(this).index());
+				}else{
+					$(this).attr('class','');
+					textMore.remove($(this).index());
+				}
+				
+			});
+		};
+
+//		单选输入数据
+		var textRadio=(function(){
+			function add(text,index){
+				var $span=$('<span _index='+index+'>'+text+'<em></em></span>');
+				$('#main-'+id).html($span);
+			};
+			function remove(){
+				$('#main-'+id).empty();
+			};
+			return {
+				add:add,
+				remove:remove
+			};
+		})();
+
+//		多选输入数据
+		var textMore=(function(){
+			function add(text,index){
+				var $span=$('<span _index='+index+'>'+text+'<em></em></span>');
+				$('#main-'+id).append($span);
+			};
+			function remove(index){
+				$('#main-'+id).find('span').each(function(){
+					if($(this).attr('_index')==index){
+						$(this).remove();
+					}
+				});
+			};
+			return {
+				add:add,
+				remove:remove
+			};
+		})();
+
+//		创建多选按钮
+		function craetMoreBtn(){
+			var $all=$('<div style="padding: 0 10px;"><a href="javascript:">全选</a></div>');
+			$('#popup-'+id).prepend($all);
+			$all.click(function(){
+				$('#popup-'+id).find('span').each(function(){
+					if($(this).attr('class') != 'active'){
+						$(this).trigger('click');
+					}
+				});
+			});
+		};
+		
+//		文字拖拽
+		function testDrag(){
+			var $main=$('#main-'+id);
+			$main.delegate('span','mouseover',function(){
+				if(!$(this).siblings().length){
+					$(this).css('cursor','default');
+				}else{
+					$(this).css('cursor','move');
+				};
+				
+				$main.delegate('span','mousedown',function(){
+					if(!$(this).siblings().length){
+						return false;
+					};
+					var $span=$(this).clone();
+				});
+				
+			});
+		
+		}
+		
+	};
+	
+	
+	
+	popup(1000,1,[
+		{name:'办公室'},
+		{name:'会议室'},
+		{name:'室外'},
+		{name:'咖啡厅'}
+	]);
+	popup(2000,1,[
+		{name:'8:00~10:00'},
+		{name:'12:00~13:00'},
+		{name:'14:00~16:00'},
+		{name:'18:00~20:00'}
+	]);
+	popup(3000,2,[
+		{name:'马云'},
+		{name:'马化腾'},
+		{name:'刘强东'},
+		{name:'李彦宏'},
+		{name:'丁磊'},
+		{name:'张志东'},
+		{name:'雷军'},
+		{name:'史玉柱'},
+		{name:'董明珠'},
+		{name:'周群飞'}
+	]);
+	popup(4000,2,[
+		{name:'总经办'},
+		{name:'研发部'},
+		{name:'商务部'},
+		{name:'策划部'},
+		{name:'运维中心'},
+		{name:'设计部'},
+		{name:'开发部'},
+		{name:'人事部'},
+		{name:'行政部'},
+		{name:'市场部'}
+	]);
+})
+</script>
 <body>
 <div class="main">
 	<div class="sel-box clear" id="sel-1000">
 		<span class="name">地点:</span>
 		<div class="write-place" id="main-1000">
-			<span>办公室<em></em></span>
+			<!--<span>办公室<em></em></span>-->
 		</div>
 		<input type="button" value="+"  id="add-1000"/>
 		<input type="button" value="-"  id="remove-1000"/>
 		<div class="popup" id="popup-1000">
-			<span>办公室</span>
+			<!--<span>办公室</span>
 			<span>会议室</span>
 			<span>室外</span>
-			<span>咖啡厅</span>
+			<span>咖啡厅</span>-->
 		</div>
 	</div>
 	
 	<div class="sel-box clear" id="sel-2000">
 		<span class="name">时间:</span>
 		<div class="write-place" id="main-2000">
-			<span>8:00~10:00<em></em></span>
+			<!--<span>8:00~10:00<em></em></span>-->
 		</div>
 		<input type="button" value="+"  id="add-2000"/>
 		<input type="button" value="-"  id="remove-2000"/>
 		<div class="popup" id="popup-2000">
-			<span>8:00~10:00</span>
+			<!--<span>8:00~10:00</span>
 			<span>12:00~13:00</span>
 			<span>14:00~16:00</span>
-			<span>18:00~20:00</span>
+			<span>18:00~20:00</span>-->
 		</div>
 	</div>
 	
 	<div class="sel-box clear" id="sel-3000">
 		<span class="name">领导:</span>
 		<div class="write-place" id="main-3000">
-			<span>马云<em></em></span>
+			<!--<span>马云<em></em></span>
 			<span>马化腾<em></em></span>
 			<span>刘强东<em></em></span>
 			<span>李彦宏<em></em></span>
@@ -63,12 +313,12 @@
 			<span>刘强东1<em></em></span>
 			<span>李彦宏1<em></em></span>
 			<span>雷军1<em></em></span>
-			<span>董明珠1<em></em></span>
+			<span>董明珠1<em></em></span>-->
 		</div>
 		<input type="button" value="+"  id="add-3000"/>
 		<input type="button" value="-"  id="remove-3000"/>
 		<div class="popup" id="popup-3000">
-			<span>马云</span>
+			<!--<span>马云</span>
 			<span>马化腾</span>
 			<span>刘强东</span>
 			<span>李彦宏</span>
@@ -79,25 +329,25 @@
 			<span>刘强东1</span>
 			<span>李彦宏1</span>
 			<span>雷军1</span>
-			<span>董明珠1</span>
+			<span>董明珠1</span>-->
 		</div>
 	</div>
 	
 	<div class="sel-box clear" id="sel-4000">
 		<span class="name">部门:</span>
 		<div class="write-place" id="main-4000">
-			<span>总经办<em></em></span>
-			<span>开发部 <em></em></span>
+			<!--<span>总经办<em></em></span>
+			<span>开发部 <em></em></span>-->
 		</div>
 		<input type="button" value="+"  id="add-4000"/>
 		<input type="button" value="-"  id="remove-4000"/>
 		<div class="popup" id="popup-4000">
-			<span>总经办</span>
+			<!--<span>总经办</span>
 			<span>人事部</span>
 			<span>商务部</span>
 			<span>财务部</span>
 			<span>设计部</span>
-			<span>开发部</span>
+			<span>开发部</span>-->
 		</div>
 	</div>
 </div>
